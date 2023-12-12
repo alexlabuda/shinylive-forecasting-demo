@@ -10,7 +10,7 @@ data(AirPassengers)
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("Forecasting Sandbox"),
+  titlePanel("Forecasting Air Passenger Demand"),
   sidebarLayout(
 
     sidebarPanel(width = 3,

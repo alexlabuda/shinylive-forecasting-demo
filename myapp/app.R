@@ -29,57 +29,57 @@ ui <- fluidPage(
         conditionalPanel(condition = "input.model == 'ARIMA'",
                              h5("Order Parameters"),
                               sliderInput(inputId = "p",
-                                          label = "p:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0),
-                            sliderInput(inputId = "d",
-                                          label = "d:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0),
-                            sliderInput(inputId = "q",
-                                          label = "q:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0),
+                                          label   = "p:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0),
+                            sliderInput(inputId   = "d",
+                                          label   = "d:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0),
+                            sliderInput(inputId   = "q",
+                                          label   = "q:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0),
                             h5("Seasonal Parameters:"),
-                            sliderInput(inputId = "P",
-                                          label = "P:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0),
-                            sliderInput(inputId = "D",
-                                          label = "D:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0),
-                            sliderInput(inputId = "Q",
-                                          label = "Q:",
-                                          min = 0,
-                                          max = 5,
-                                          value = 0)
+                            sliderInput(inputId   = "P",
+                                          label   = "P:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0),
+                            sliderInput(inputId   = "D",
+                                          label   = "D:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0),
+                            sliderInput(inputId   = "Q",
+                                          label   = "Q:",
+                                          min     = 0,
+                                          max     = 5,
+                                          value   = 0)
         ),
         # Holt Winters model arguments
         conditionalPanel(condition = "input.model == 'Holt-Winters'",
                          checkboxGroupInput(inputId = "hw_args", 
                          label = "Select Holt-Winters Parameters:", 
-                         choices = list("Beta" = 2, 
+                         choices = list("Beta"  = 2, 
                                         "Gamma" = 3),
                          selected = c(1, 2, 3)),
-                          selectInput(inputId = "hw_seasonal",
-                                      label = "Select Seasonal Type:",
-                                      choices = c("Additive", "Multiplicative"),
+                          selectInput(inputId  = "hw_seasonal",
+                                      label    = "Select Seasonal Type:",
+                                      choices  = c("Additive", "Multiplicative"),
                                       selected = "Additive")),
         
         checkboxInput(inputId = "log", 
-                    label = "Log Transformation",
-                    value = FALSE),
-      sliderInput(inputId = "h",
-                  label = "Forecasting Horizon:",
-                  min = 1,
-                  max = 60,
-                  value = 24)
+                    label     = "Log Transformation",
+                    value     = FALSE),
+      sliderInput(inputId     = "h",
+                  label       = "Forecasting Horizon:",
+                  min         = 1,
+                  max         = 60,
+                  value       = 24)
                 #   actionButton(inputId = "update",
                 #                 label = "Update!")
 
@@ -89,7 +89,7 @@ ui <- fluidPage(
     mainPanel(width = 9,
       # Forecast Plot ----
      plotOutput(outputId = "fc_plot",
-                height = "400px")
+                height = "500px")
 
     )
   )
@@ -98,25 +98,26 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
 # Load the dataset a reactive object
-    d <- reactiveValues(df = data.frame(input = as.numeric(AirPassengers), 
-                 index = seq.Date(from = as.Date("1949-01-01"),
-                                  by = "month",
-                                  length.out = length(AirPassengers))),
-                        air = AirPassengers)
+    d <- reactiveValues(
+      df = data.frame(input = as.numeric(AirPassengers), 
+                      index = seq.Date(from       = as.Date("1949-01-01"),
+                                       by         = "month",
+                                       length.out = length(AirPassengers))),
+      air = AirPassengers)
 
 # Log transformation 
     observeEvent(input$log,{
         if(input$log){
             d$df <- data.frame(input = log(as.numeric(AirPassengers)), 
-                 index = seq.Date(from = as.Date("1949-01-01"),
-                                  by = "month",
+                 index = seq.Date(from       = as.Date("1949-01-01"),
+                                  by         = "month",
                                   length.out = length(AirPassengers)))
             
             d$air <- log(AirPassengers)
         } else {
             d$df <- data.frame(input = as.numeric(AirPassengers), 
-                 index = seq.Date(from = as.Date("1949-01-01"),
-                                  by = "month",
+                 index = seq.Date(from       = as.Date("1949-01-01"),
+                                  by         = "month",
                                   length.out = length(AirPassengers)))
             
             d$air <- AirPassengers
@@ -143,14 +144,14 @@ server <- function(input, output) {
 
         md <- HoltWinters(d$air, 
                           seasonal = ifelse(input$hw_seasonal == "Additive", "additive", "multiplicative"),
-                          beta = b,
-                          gamma = c
+                          beta     = b,
+                          gamma    = c
                           )
         fc <- predict(md, n.ahead = input$h, prediction.interval = TRUE) |>
                 as.data.frame()
-        fc$index <- seq.Date(from = as.Date("1961-01-01"),
-                                  by = "month",
-                                  length.out = input$h)
+        fc$index <- seq.Date(from       = as.Date("1961-01-01"),
+                             by         = "month",
+                             length.out = input$h)
     # ARIMA model
     } else if(input$model == "ARIMA"){
         

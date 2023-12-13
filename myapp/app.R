@@ -14,15 +14,15 @@ ui <- fluidPage(
   sidebarLayout(
 
     sidebarPanel(width = 3,
-        selectInput(inputId = "model",
-                    label = "Select Model",
-                    choices = c("Linear Regression", "ARIMA", "Holt-Winters"),
+        selectInput(inputId  = "model",
+                    label    = "Select Model",
+                    choices  = c("Linear Regression", "ARIMA", "Holt-Winters"),
                     selected = "Linear Regression"),
         # Linear Regression model arguments
         conditionalPanel(condition = "input.model == 'Linear Regression'",
                          checkboxGroupInput(inputId = "lm_args", 
-                         label = "Select Regression Features:", 
-                         choices = list("Trend" = 1, 
+                         label   = "Select Regression Features:", 
+                         choices = list("Trend"       = 1, 
                                         "Seasonality" = 2),
                          selected = 1)),
         # ARIMA model arguments
@@ -89,7 +89,7 @@ ui <- fluidPage(
     mainPanel(width = 9,
       # Forecast Plot ----
      plotOutput(outputId = "fc_plot",
-                height = "500px")
+                height   = "500px")
 
     )
   )
@@ -195,30 +195,30 @@ server <- function(input, output) {
                 as.data.frame() 
         
 
-        fc$index <- seq.Date(from = as.Date("1961-01-01"),
-                                  by = "month",
-                                  length.out = input$h)
+        fc$index <- seq.Date(from       = as.Date("1961-01-01"),
+                             by         = "month",
+                             length.out = input$h)
 
     }
 
 # Setting the plot
     at_x <- pretty(seq.Date(from = min(d$df$index),
-                     to = max(fc$index),
-                     by = "month"))
+                     to          = max(fc$index),
+                     by          = "month"))
 
     at_y <- c(pretty(c(d$df$input, fc$upr)), 1200)
 
     plot(x = d$df$index, y = d$df$input,
-        col = "#1f77b4",
-        type = "l",
-        frame.plot = FALSE,
-        axes = FALSE,
+        col         = "#1f77b4",
+        type        = "l",
+        frame.plot  = FALSE,
+        axes        = FALSE,
         panel.first = abline(h = at_y, col = "grey80"),
-        main = "AirPassengers Forecast",
-        xlim = c(min(d$df$index), max(fc$index)),
-        ylim = c(min(c(min(d$df$input), min(fc$lwr))), max(c(max(fc$upr), max(d$df$input)))),
-        xlab = paste("Model:", input$model, sep = " "),
-        ylab = "Num. of Passengers (in Thousands)")
+        main        = "AirPassengers Forecast",
+        xlim        = c(min(d$df$index), max(fc$index)),
+        ylim        = c(min(c(min(d$df$input), min(fc$lwr))), max(c(max(fc$upr), max(d$df$input)))),
+        xlab        = paste("Model:", input$model, sep = " "),
+        ylab        = "Num. of Passengers (in Thousands)")
     mtext(side =1, text = format(at_x, format = "%Y-%M"), at = at_x,
       col = "grey20", line = 1, cex = 0.8)
 
